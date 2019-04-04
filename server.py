@@ -1,60 +1,64 @@
-from bottle import Bottle, run, template, static_file, request, route, redirect, error
+from flask import Flask, render_template, request, redirect
 import os
 from collections import namedtuple, defaultdict
 
-path = os.path.abspath(__file__)
-dir_path = os.path.dirname(path)
-app = Bottle()
+app = Flask(__name__)
 
 User = namedtuple("User", "password")
 Moderator = namedtuple("Moderator","password")
 users = defaultdict()
 moderators = defaultdict()
 ambulances = defaultdict()
-# dummy accounts
+# dummy data
 moderators["rishabhkalakoti@gmail.com"]=Moderator(password = "letmepass")
 users["8440949302"]=User(password = "letmepass")
 
-@app.route("/")
-def changePath():
-    return template("templates/login.html")
 
-@error(404)
+@app.errorhandler(404)
 def error404(error):
     return redirect("/")
 
-@app.get("/login")
+@app.route("/")
+@app.route("/login")
 def login():
-    return template("templates/login.html")
+    return render_template("login.html")
 
-@app.post("/verifyMod")
+@app.route("/verifyMod", methods=["POST"])
 def verifyMod():
-	user_id = request.forms.get("email")
-	pwd = request.forms.get("pwd")
+	user_id = request.form["email"]
+	pwd = request.form["pwd"]
 	if(user_id in moderators):
 		if(moderators[user_id].password == pwd):
-			return "Logged in"
+			#todo: create session
+			return redirect("/dashboard")
 	return "Incorrect username/password"
 
-@app.post("/verifyUser")	
+@app.route("/verifyUser", methods=["POST"])
 def verifyUser():
-	user_id = request.forms.get("user_id")
-	pwd = request.forms.get("pwd")
+	user_id = request.form["user_id"]
+	pwd = request.form["pwd"]
 	if(user_id in moderators):
 		if(moderators[user_id].password == pwd):
-			return "Logged in"
+			# todo: create session
+			return redirect("/booking")
 	return "Incorrect username/password"
 
-@app.get("/dashboard")
+@app.route("/dashboard")
 def dashboard():
-	return "dash"
+	return render_template("dashboard.html")
 
-@app.get("/booking")
+@app.route("/booking")
 def booking():
-	return "book"
+	return render_template("booking.html")
 
-@app.get("/static/<filepath:path>")
-def server_static(filepath):
-    return static_file(filepath, root=os.path.join(dir_path, "static"))
+@app.route("/logout")
+def logout():
+	# todo- destroy session
+	return render_template("login.html")
 
-run(app, host="localhost", port=8080)
+
+@app.route("/static/<path:path>")
+def server_static(path):
+    return app.send_static_file("static/" + path)
+
+app.run(host="localhost", port=8080)
