@@ -6,7 +6,7 @@ from collections import namedtuple, defaultdict
 
 app = Flask(__name__)
 
-User = namedtuple("User", "password")
+User = namedtuple("User", "password booking")
 Moderator = namedtuple("Moderator","password")
 Ambulance = namedtuple("Ambulance","driver phone is_booked")
 users = defaultdict()
@@ -37,7 +37,6 @@ def verifyMod():
 	pwd = request.form["pwd"]
 	if(user_id in moderators):
 		if(moderators[user_id].password == pwd):
-			#todo: create session
 			session["logged_in"] = "mod"
 			session["user_id"] = user_id
 			return redirect("/dashboard")
@@ -49,7 +48,6 @@ def verifyUser():
 	pwd = request.form["pwd"]
 	if(user_id in users):
 		if(users[user_id].password == pwd):
-			# todo: create session
 			session["logged_in"] = "user"
 			session["user_id"] = user_id
 			return redirect("/booking")
@@ -65,6 +63,19 @@ def dashboard():
 		]
 	return render_template("dashboard.html", ambulances = ambulances_data)
 
+@app.route("/book/<book_id>")
+def book(book_id):
+	users[session.get("user_id")] = users[session.get("user_id")]._replace(booking = book_id)
+	ambulances[book_id] = ambulances[book_id]._replace(is_booked = session.get("user_id"))
+	return redirect("/booking")
+
+@app.route("/cancelBooking")
+def cancelBooking():
+	book_id = users[session.get("user_id")].booking
+	users[session.get("user_id")] = users[session.get("user_id")]._replace(booking = None)
+	ambulances[book_id] = ambulances[book_id]._replace(is_booked = False)
+	return redirect("/booking")
+
 @app.route("/booking")
 def booking():
 	if not (session.get("logged_in")=="user"):
@@ -73,7 +84,10 @@ def booking():
 			(amb_id, amb_info.driver, amb_info.phone, amb_info.is_booked)
 			for amb_id, amb_info in ambulances.items()
 		]
-	return render_template("booking.html", ambulances = free_ambulances)
+	booking = users[session.get("user_id")].booking
+	if booking!=None:
+		booking = ambulances[booking]
+	return render_template("booking.html", ambulances = free_ambulances, booking = booking)
 
 @app.route("/logout")
 def logout():
@@ -89,7 +103,7 @@ def server_static(path):
 
 # dummy data
 moderators["rishabhkalakoti@gmail.com"]=Moderator(password = "letmepass")
-users["8440949302"]=User(password = "letmepass")
+users["8440949302"]=User(password = "letmepass", booking=None)
 addAmbulance("DummyDriver1",9627910025)
 addAmbulance("DummyDriver2",1234567890)
 

@@ -9,7 +9,15 @@
 	</head>
 	<body>
 		<div class="container-fluid">
-			 <div class="table-responsive">
+			<!-- current booking -->
+			{% if booking!=None %}
+			<div class="container-fluid">
+				Driver: {{ booking.driver }}<br>
+				Phone: {{ booking.phone }}<br>
+				<a href="/cancelBooking">Cancel Booking</a>
+			</div>
+			{% endif %}
+			<div class="table-responsive">
 				<table class="table">
 					<thead>
 						<tr>
@@ -23,7 +31,9 @@
 						<tr>
 							<td>{{driver}}</td>
 							<td>{{phone}}</td>
+							{% if booking==None %}
 							<td><a href="/book/{{amb_id}}">Book</a></td>
+							{% endif %}
 						</tr>
 						{% endfor %}
 					</tbody>
