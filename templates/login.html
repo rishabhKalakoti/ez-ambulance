@@ -9,6 +9,21 @@
 	</head>
 	<body>
 		<div class="container">
+			<div class="toast" data-autohide="false">
+				<div class="toast-header">
+					<strong class="mr-auto text-primary">Select Login type</strong>
+					<button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+				</div>
+				<div class="toast-body">
+					<b>User</b>- book ambulances<br>
+					<b>Moderator</b>- register your ambulances to the network
+				</div>
+				<script>
+					$(document).ready(function(){
+					  $('.toast').toast('show');
+					});
+				</script>
+			</div>
 			<ul class="nav nav-tabs">
 				<li class="nav-item">
 				<a class="nav-link" data-toggle="tab" href="#user">User</a>
@@ -20,10 +35,10 @@
 
 			<div class="tab-content">
 				<div class="tab-pane container" id="user">
-					<form name="user" method="post" action="">
+					<form name="user" method="post" action="/verifyUser">
 						<div class="form-group">
-							<label for="email">User id:</label>
-							<input type="email" class="form-control" id="email">
+							<label for="user_id">User id:</label>
+							<input type="text" class="form-control" id="user_id" name="user_id">
 						</div>
 						<div class="form-group">
 							<label for="pwd">Password:</label>
@@ -39,14 +54,14 @@
 					</form>
 				</div>
 				<div class="tab-pane container" id="moderator">
-					<form name="mod" method="post" action="">
+					<form name="mod" method="post" action="/verifyMod">
 						<div class="form-group">
 							<label for="email">Email address:</label>
-							<input type="email" class="form-control" id="email">
+							<input type="email" class="form-control" id="email" name="email">
 						</div>
 						<div class="form-group">
 							<label for="pwd">Password:</label>
-							<input type="password" class="form-control" id="pwd">
+							<input type="password" class="form-control" id="pwd" name="pwd">
 						</div>
 						<div class="form-group form-check">
 							<label class="form-check-label">
