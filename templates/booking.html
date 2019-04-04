@@ -8,7 +8,27 @@
 		<script src="static/js/bootstrap.min.js"></script>
 	</head>
 	<body>
-		<div class="container">
+		<div class="container-fluid">
+			 <div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Driver</th>
+							<th>Phone Number</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for amb_id, driver, phone, is_booked in ambulances %}
+						<tr>
+							<td>{{driver}}</td>
+							<td>{{phone}}</td>
+							<td><a href="/book/{{amb_id}}">Book</a></td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</body>
 </html>
