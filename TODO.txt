@@ -1,0 +1,10 @@
+- add email login for user
+- add email login for moderator
+- add oauth login for user
+- add phone login for user
+- send message to driver for booking
+- add owner (moderator) field to ambulances and change things accordingly
+- use google maps for location of user and ambulances
+- use google api to sort ambulances according to distance
+- transfer ambulances to database
+- transfer users/ mod to database

@@ -27,6 +27,8 @@ def addAmbulance(Driver, Phone):
 
 @app.route("/add", methods=["POST"])
 def add():
+	if not (session.get("logged_in")=="mod"):
+		return render_template("login.html")
 	driver = request.form["driver"]
 	phone = request.form["phone"]
 	addAmbulance(driver,phone)
@@ -39,6 +41,15 @@ def remove(amb_id):
 	ambulances.pop(amb_id)
 	return redirect("/dashboard")
 
+@app.route("/modify")
+def remove():
+	if not (session.get("logged_in")=="mod"):
+		return render_template("login.html")
+	driver = request.form["driver"]
+	phone = request.form["phone"]
+	amb_id = request.form["amb_id"]
+	ambulances[amb_id]._replace(driver = driver, phone = phone)
+	return redirect("/dashboard")
 
 @app.errorhandler(404)
 def error404(error):
