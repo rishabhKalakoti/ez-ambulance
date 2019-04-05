@@ -9,6 +9,53 @@
 	</head>
 	<body>
 		<div class="container-fluid">
+			<div id="accordion">
+				<div class="card">
+					<div class="card-header">
+						<a class="card-link" data-toggle="collapse" href="#collapseAdd">
+							Add Ambulance
+						</a>
+					</div>
+					<div id="collapseAdd" class="collapse" data-parent="#accordion">
+						<div class="card-body">
+								<form name="add" method="post" action="/add">
+									<div class="form-group">
+										<label for="driver">Driver Name:</label>
+										<input type="text" class="form-control" id="driver" name="driver">
+									</div>
+									<div class="form-group">
+										<label for="pwd">Phone:</label>
+										<input type="phone" class="form-control" id="phone" name="phone">
+									</div>
+									<button type="submit" class="btn btn-primary">Submit</button>
+								</form>
+						</div>
+					</div>
+				</div>
+			</div> 
+			<br>
+			<div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Driver</th>
+							<th>Phone Number</th>
+							<th></th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for amb_id, driver, phone, is_booked in ambulances %}
+						<tr>
+							<td>{{driver}}</td>
+							<td>{{phone}}</td>
+							<td><a href="">Modify</a></td>
+							<td><a href="/remove/{{amb_id}}">Remove</a></td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</body>
 </html>

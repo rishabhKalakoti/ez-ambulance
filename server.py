@@ -16,11 +16,29 @@ ambulances = defaultdict()
 def addAmbulance(Driver, Phone):
 	ambulance_id = None
 	while True:
-		r = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
+		r = ''.join(
+			[random.choice(string.ascii_letters + string.digits) 
+			for n in range(10)]
+			)
 		if(r not in ambulances):
 			ambulance_id = r
 			break
 	ambulances[r] = Ambulance(driver=Driver, phone=Phone,is_booked=False)
+
+@app.route("/add", methods=["POST"])
+def add():
+	driver = request.form["driver"]
+	phone = request.form["phone"]
+	addAmbulance(driver,phone)
+	return redirect("/dashboard")
+
+@app.route("/remove/<amb_id>")
+def remove(amb_id):
+	if not (session.get("logged_in")=="mod"):
+		return render_template("login.html")
+	ambulances.pop(amb_id)
+	return redirect("/dashboard")
+
 
 @app.errorhandler(404)
 def error404(error):
@@ -65,14 +83,21 @@ def dashboard():
 
 @app.route("/book/<book_id>")
 def book(book_id):
-	users[session.get("user_id")] = users[session.get("user_id")]._replace(booking = book_id)
-	ambulances[book_id] = ambulances[book_id]._replace(is_booked = session.get("user_id"))
+	if not (session.get("logged_in")=="user"):
+		return render_template("login.html")
+	users[session.get("user_id")] = users[session.get("user_id")]._replace(
+		booking = book_id)
+	ambulances[book_id] = ambulances[book_id]._replace(
+		is_booked = session.get("user_id"))
 	return redirect("/booking")
 
 @app.route("/cancelBooking")
 def cancelBooking():
+	if not (session.get("logged_in")=="user"):
+		return render_template("login.html")
 	book_id = users[session.get("user_id")].booking
-	users[session.get("user_id")] = users[session.get("user_id")]._replace(booking = None)
+	users[session.get("user_id")] = users[session.get("user_id")]._replace(
+		booking = None)
 	ambulances[book_id] = ambulances[book_id]._replace(is_booked = False)
 	return redirect("/booking")
 
@@ -87,7 +112,8 @@ def booking():
 	booking = users[session.get("user_id")].booking
 	if booking!=None:
 		booking = ambulances[booking]
-	return render_template("booking.html", ambulances = free_ambulances, booking = booking)
+	return render_template("booking.html", 
+		ambulances = free_ambulances, booking = booking)
 
 @app.route("/logout")
 def logout():
