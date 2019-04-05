@@ -8,7 +8,38 @@
 		<script src="static/js/bootstrap.min.js"></script>
 	</head>
 	<body>
+		<div id="myModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Modify Ambulance Details</h4>
+					</div>
+					<div class="modal-body">
+						<form name="modify" id="modify" method="post" action="/modify">
+							<div class="form-group">
+								<input type="hidden" class="form-control" id="amb_id" name="amb_id">
+							</div>
+								
+							<div class="form-group">
+								<label for="driver">Driver Name:</label>
+								<input type="text" class="form-control" id="driver" name="driver" required>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Phone:</label>
+								<input type="phone" class="form-control" id="phone" name="phone" required>
+							</div>
+							<button type="submit" class="btn btn-primary">Modify</button>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="container-fluid">
+			
 			<div id="accordion">
 				<div class="card">
 					<div class="card-header">
@@ -49,10 +80,23 @@
 						<tr>
 							<td>{{driver}}</td>
 							<td>{{phone}}</td>
-							<td><a href="">Modify</a></td>
-							<td><a href="/remove/{{amb_id}}">Remove</a></td>
+							<td>
+								<button onclick="update_val('{{amb_id}}','{{driver}}','{{phone}}')" 
+									class="btn btn-info" class="btn btn-info btn-lg"
+								 data-toggle="modal" data-target="#myModal">Modify</button>
+								</td>
+							<td><a href="/remove/{{amb_id}}" class="btn btn-info" role="button">Remove</a></td>
 						</tr>
 						{% endfor %}
+						<script>
+							function update_val(amb_id,driver,phone){
+								console.log("ran");
+								var f = document.forms['modify'];
+								f.elements['amb_id'].value = amb_id;
+								f.elements['driver'].value = driver;
+								f.elements['phone'].value = phone;
+							}
+						</script>
 					</tbody>
 				</table>
 			</div>
