@@ -8,12 +8,12 @@ app = Flask(__name__)
 
 User = namedtuple("User", "password booking")
 Moderator = namedtuple("Moderator","password")
-Ambulance = namedtuple("Ambulance","driver phone is_booked")
+Ambulance = namedtuple("Ambulance","driver phone location is_booked owner")
 users = defaultdict()
 moderators = defaultdict()
 ambulances = defaultdict()
 
-def addAmbulance(Driver, Phone):
+def addDummyAmbulance(Driver, Phone, Location, Owner):
 	ambulance_id = None
 	while True:
 		r = ''.join(
@@ -23,7 +23,10 @@ def addAmbulance(Driver, Phone):
 		if(r not in ambulances):
 			ambulance_id = r
 			break
-	ambulances[r] = Ambulance(driver=Driver, phone=Phone,is_booked=False)
+	# for dummys
+	ambulances[r] = Ambulance(
+		driver=Driver, phone=Phone,is_booked=False, owner=Owner, location=Location)
+
 
 @app.route("/add", methods=["POST"])
 def add():
@@ -31,7 +34,20 @@ def add():
 		return render_template("login.html")
 	driver = request.form["driver"]
 	phone = request.form["phone"]
-	addAmbulance(driver,phone)
+	location = request.form["location"]
+	ambulance_id=None
+	while True:
+		r = ''.join(
+			[random.choice(string.ascii_letters + string.digits) 
+			for n in range(10)]
+			)
+		if(r not in ambulances):
+			ambulance_id = r
+			break
+	# for dummys
+	owner = session.get("user_id")
+	ambulances[r] = Ambulance(
+		driver=driver, phone=phone,location=location, is_booked=False, owner=owner)
 	return redirect("/dashboard")
 
 @app.route("/remove/<amb_id>")
@@ -47,9 +63,10 @@ def modify():
 		return render_template("login.html")
 	driver = request.form["driver"]
 	phone = request.form["phone"]
+	location = request.form["location"]
 	amb_id = request.form["amb_id"]
 	ambulances[amb_id] = ambulances[amb_id]._replace(
-		driver = driver, phone = phone)
+		driver = driver, phone = phone, location = location)
 	return redirect("/dashboard")
 
 @app.errorhandler(404)
@@ -88,8 +105,9 @@ def dashboard():
 	if not (session.get("logged_in")=="mod"):
 		return render_template("login.html")
 	ambulances_data = [
-			(amb_id, amb_info.driver, amb_info.phone, amb_info.is_booked)
-			for amb_id, amb_info in ambulances.items()
+			(amb_id, amb_info.driver, amb_info.phone, amb_info.location, 
+			amb_info.is_booked, amb_info.owner)
+			for amb_id, amb_info in ambulances.items() if amb_info.owner == session.get("user_id")
 		]
 	return render_template("dashboard.html", ambulances = ambulances_data)
 
@@ -118,7 +136,8 @@ def booking():
 	if not (session.get("logged_in")=="user"):
 		return render_template("login.html")
 	free_ambulances = [
-			(amb_id, amb_info.driver, amb_info.phone, amb_info.is_booked)
+			(amb_id, amb_info.driver, amb_info.phone, amb_info.location,
+			 amb_info.is_booked, amb_info.owner)
 			for amb_id, amb_info in ambulances.items()
 		]
 	booking = users[session.get("user_id")].booking
@@ -140,10 +159,11 @@ def server_static(path):
 
 
 # dummy data
-moderators["rishabhkalakoti@gmail.com"]=Moderator(password = "letmepass")
-users["8440949302"]=User(password = "letmepass", booking=None)
-addAmbulance("DummyDriver1",9627910025)
-addAmbulance("DummyDriver2",1234567890)
+moderators["dummymod@gmail.com"]=Moderator(password = "letmepass")
+users["dummyuser@gmail.com"]=User(password = "letmepass", booking=None)
+addDummyAmbulance("DummyDriver1",9627910025,"Malaviya Nagar","dummymod@gmail.com")
+addDummyAmbulance("DummyDriver2",1234567890,"Malaviya Nagar","dummymod@gmail.com")
+addDummyAmbulance("DummyDriver3",1234567899,"Malaviya Nagar","dummymod1@gmail.com")
 
 
 app.secret_key = os.urandom(12)

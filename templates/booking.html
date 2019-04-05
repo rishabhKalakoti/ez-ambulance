@@ -14,6 +14,7 @@
 			<div class="container-fluid">
 				Driver: {{ booking.driver }}<br>
 				Phone: {{ booking.phone }}<br>
+				Location: {{ booking.location }}<br>
 				<a href="/cancelBooking">Cancel Booking</a>
 			</div>
 			{% endif %}
@@ -23,14 +24,16 @@
 						<tr>
 							<th>Driver</th>
 							<th>Phone Number</th>
+							<th>Location</th>
 							<th></th>
 						</tr>
 					</thead>
 					<tbody>
-						{% for amb_id, driver, phone, is_booked in ambulances %}
+						{% for amb_id, driver, phone, location, is_booked, owner in ambulances %}
 						<tr>
 							<td>{{driver}}</td>
 							<td>{{phone}}</td>
+							<td>{{location}}</td>
 							{% if booking==None %}
 							<td><a href="/book/{{amb_id}}">Book</a></td>
 							{% endif %}
