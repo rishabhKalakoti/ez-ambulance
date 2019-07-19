@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-flask = "==0.12.3"
+flask = "==1.0"
 jinja2 = "==2.10.1"
 
 [requires]
